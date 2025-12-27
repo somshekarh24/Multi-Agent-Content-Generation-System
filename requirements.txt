@@ -1,0 +1,7 @@
+# Multi-Agent Content Generation System
+# Python 3.7+ required
+
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+

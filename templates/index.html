@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Content Generation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Multi-Agent Content Generation System</h1>
+            <p class="subtitle">Generate structured JSON content from product data</p>
+        </header>
+
+        <div class="deploy-section">
+            <h2>🚀 Quick Deploy</h2>
+            <p class="deploy-subtitle">Deploy this project to cloud platforms with one click</p>
+            <div class="deploy-buttons">
+                <a href="https://render.com" target="_blank" class="deploy-btn render-btn" title="Deploy to Render">
+                    <span class="deploy-icon">⚡</span>
+                    <span class="deploy-text">Deploy to Render</span>
+                    <span class="deploy-badge">Free</span>
+                </a>
+                <a href="https://railway.app" target="_blank" class="deploy-btn railway-btn" title="Deploy to Railway">
+                    <span class="deploy-icon">🚂</span>
+                    <span class="deploy-text">Deploy to Railway</span>
+                    <span class="deploy-badge">Fast</span>
+                </a>
+                <a href="https://heroku.com" target="_blank" class="deploy-btn heroku-btn" title="Deploy to Heroku">
+                    <span class="deploy-icon">🟣</span>
+                    <span class="deploy-text">Deploy to Heroku</span>
+                    <span class="deploy-badge">Popular</span>
+                </a>
+                <a href="https://fly.io" target="_blank" class="deploy-btn fly-btn" title="Deploy to Fly.io">
+                    <span class="deploy-icon">🦅</span>
+                    <span class="deploy-text">Deploy to Fly.io</span>
+                    <span class="deploy-badge">Global</span>
+                </a>
+            </div>
+            <div class="deploy-info">
+                <p><strong>📋 Deployment Steps:</strong></p>
+                <ol>
+                    <li>Click a deploy button above</li>
+                    <li>Sign up/Login with GitHub</li>
+                    <li>Connect your repository</li>
+                    <li>Deploy automatically (config files included!)</li>
+                </ol>
+                <p class="deploy-note">💡 <strong>Tip:</strong> All deployment configurations are pre-configured. Connect your repository to any platform and deploy automatically.</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>Product Information</h2>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="product_name">Product Name *</label>
+                        <input type="text" id="product_name" name="product_name" required 
+                               placeholder="e.g., GlowBoost Vitamin C Serum">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="concentration">Concentration *</label>
+                        <input type="text" id="concentration" name="concentration" required 
+                               placeholder="e.g., 10% Vitamin C">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="skin_type">Skin Type * (comma-separated)</label>
+                        <input type="text" id="skin_type" name="skin_type" required 
+                               placeholder="e.g., Oily, Combination">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="key_ingredients">Key Ingredients * (comma-separated)</label>
+                        <input type="text" id="key_ingredients" name="key_ingredients" required 
+                               placeholder="e.g., Vitamin C, Hyaluronic Acid">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="benefits">Benefits * (comma-separated)</label>
+                        <input type="text" id="benefits" name="benefits" required 
+                               placeholder="e.g., Brightening, Fades dark spots">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="how_to_use">How to Use *</label>
+                        <textarea id="how_to_use" name="how_to_use" rows="3" required 
+                                  placeholder="e.g., Apply 2–3 drops in the morning before sunscreen"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="side_effects">Side Effects</label>
+                        <input type="text" id="side_effects" name="side_effects" 
+                               placeholder="e.g., Mild tingling for sensitive skin">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price (INR) *</label>
+                        <input type="number" id="price" name="price" step="0.01" min="0" required 
+                               placeholder="e.g., 699">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="loadSample" class="btn btn-secondary">Load Sample Data</button>
+                        <button type="submit" class="btn btn-primary">Generate Content</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <h2>Generated Content</h2>
+                <div class="success-message" id="successMessage"></div>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="faq">FAQ Page</button>
+                    <button class="tab-btn" data-tab="product_page">Product Page</button>
+                    <button class="tab-btn" data-tab="comparison_page">Comparison Page</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="faq" class="tab-pane active">
+                        <div class="json-viewer" id="faqContent"></div>
+                        <button class="btn btn-download" onclick="downloadFile('faq')">Download FAQ JSON</button>
+                    </div>
+                    <div id="product_page" class="tab-pane">
+                        <div class="json-viewer" id="productPageContent"></div>
+                        <button class="btn btn-download" onclick="downloadFile('product_page')">Download Product Page JSON</button>
+                    </div>
+                    <div id="comparison_page" class="tab-pane">
+                        <div class="json-viewer" id="comparisonPageContent"></div>
+                        <button class="btn btn-download" onclick="downloadFile('comparison_page')">Download Comparison Page JSON</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating content with multi-agent pipeline...</p>
+        </div>
+    </div>
+
+    <script>
+        // Load sample data
+        document.getElementById('loadSample').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/load-sample');
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                
+                document.getElementById('product_name').value = data.product_name || '';
+                document.getElementById('concentration').value = data.concentration || '';
+                document.getElementById('skin_type').value = data.skin_type ? data.skin_type.join(', ') : '';
+                document.getElementById('key_ingredients').value = data.key_ingredients ? data.key_ingredients.join(', ') : '';
+                document.getElementById('benefits').value = data.benefits ? data.benefits.join(', ') : '';
+                document.getElementById('how_to_use').value = data.how_to_use || '';
+                document.getElementById('side_effects').value = data.side_effects || '';
+                document.getElementById('price').value = data.price || '';
+            } catch (error) {
+                alert('Error loading sample data: ' + error.message);
+            }
+        });
+
+        // Form submission
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            resultsSection.style.display = 'none';
+            
+            try {
+                const formData = new FormData(e.target);
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'Unknown error');
+                }
+                
+                // Display results
+                document.getElementById('faqContent').textContent = JSON.stringify(result.results.faq, null, 2);
+                document.getElementById('productPageContent').textContent = JSON.stringify(result.results.product_page, null, 2);
+                document.getElementById('comparisonPageContent').textContent = JSON.stringify(result.results.comparison_page, null, 2);
+                
+                document.getElementById('successMessage').textContent = result.message;
+                resultsSection.style.display = 'block';
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                
+                // Update buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update panes
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Download file
+        function downloadFile(pageType) {
+            window.location.href = `/download/${pageType}`;
+        }
+    </script>
+</body>
+</html>
+
+
